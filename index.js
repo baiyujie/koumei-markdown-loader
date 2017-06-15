@@ -3,7 +3,7 @@ var MarkdownIt = require('markdown-it');
 var hljs = require('highlight.js');
 var path = require('path');
 
-module.exports = function (source) {
+module.exports = function (source) { 
     this.cacheable();
 
     var options = loaderUtils.getOptions(this);
