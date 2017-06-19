@@ -3,7 +3,7 @@ var MarkdownIt = require('markdown-it');
 var hljs = require('highlight.js');
 var path = require('path');
 
-module.exports = function (source) { 
+module.exports = function (source) {
     this.cacheable();
 
     var options = loaderUtils.getOptions(this);
@@ -35,13 +35,16 @@ module.exports = function (source) {
                 token.attrSet(':skip', true);
             }
             if (token.info.trim() === 'js') {
+                var tempImportScript = '';
                 token.content = token.content.replace(/import[\s\S]*?from[\s\S]*?\n/g, function ($0) {
+                    tempImportScript += $0;
                     if (importScript.every(function (s) { return s.replace(/\s|\n/g, '') !== $0.replace(/\s|\n/g, '') })) {
                         importScript.push($0);
                     }
                     return '';
                 })
                 script.push(token.content);
+                token.content = tempImportScript + token.content;
                 
                 token.attrSet(':skip', true);
             }
@@ -53,9 +56,26 @@ module.exports = function (source) {
     });
     var result = md.renderer.render(newTokens, md.options);
     var componentName = 'component-demo-' + this.resourcePath
-                                                .match(/.*components\/(.*)\.md/)[1]
-                                                .replace(/\//g, '-')
+                                                .match(/.*components\\(.*)\.md/)[1]
+                                                .replace(/\\/g, '-')
                                                 .replace(/ms-/g, '');
+
+    var componentName = '';                                            
+    var winpath = /^[a-zA-Z];[/]((?! )(?![^/]*s+[/])[w -]+[/])*(?! )(?![^.]+s+.)[w -]+$/; 
+    var lnxPath = /^([/] [w-]+)*$/;
+    if(this.resourcePath.match(winpath)!=null){
+        var componentName = 'component-demo-' + this.resourcePath
+                                                    .match(/.*components\\(.*)\.md/)[1]
+                                                    .replace(/\\/g, '-')
+                                                    .replace(/ms-/g, '');
+    }else if(this.resourcePath.match(lnxPath)!=null){
+        var componentName = 'component-demo-' + this.resourcePath
+                                                    .match(/.*components\/(.*)\.md/)[1]
+                                                    .replace(/\//g, '-')
+                                                    .replace(/ms-/g, '');
+    }else{
+        throw "This path is illegal!";
+    }
     var component = [
         importScript.join(''),
         'export const name = \'' + componentName + '\';' +
