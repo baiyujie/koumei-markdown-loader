@@ -55,26 +55,17 @@ module.exports = function (source) {
         newTokens.push(token);
     });
     var result = md.renderer.render(newTokens, md.options);
-    var componentName = 'component-demo-' + this.resourcePath
-                                                .match(/.*components\\(.*)\.md/)[1]
-                                                .replace(/\\/g, '-')
-                                                .replace(/ms-/g, '');
-
-    var componentName = '';                                            
-    var winpath = /^[a-zA-Z];[/]((?! )(?![^/]*s+[/])[w -]+[/])*(?! )(?![^.]+s+.)[w -]+$/; 
-    var lnxPath = /^([/] [w-]+)*$/;
-    if(this.resourcePath.match(winpath)!=null){
+    var componentName = '';
+    if(this.resourcePath.indexOf('\\')!=null){
         var componentName = 'component-demo-' + this.resourcePath
                                                     .match(/.*components\\(.*)\.md/)[1]
                                                     .replace(/\\/g, '-')
                                                     .replace(/ms-/g, '');
-    }else if(this.resourcePath.match(lnxPath)!=null){
+    }else if(this.resourcePath.indexOf('/')!=null){
         var componentName = 'component-demo-' + this.resourcePath
                                                     .match(/.*components\/(.*)\.md/)[1]
                                                     .replace(/\//g, '-')
                                                     .replace(/ms-/g, '');
-    }else{
-        throw "This path is illegal!";
     }
     var component = [
         importScript.join(''),
