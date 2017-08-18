@@ -19,6 +19,11 @@ module.exports = function (source) {
         delete markdownOptions.highlight;
     }
 
+    var prefix = 'component-api';
+    if(options.prefix){
+        prefix = options.prefix
+    }
+
     var md = MarkdownIt(markdownOptions);
 
     var importScript = [];
@@ -62,12 +67,12 @@ module.exports = function (source) {
         result = md.render(source);
     }
 
-    var componentName = 'component-demo-' + path.relative(__dirname, this.resourcePath)
+    var componentName = prefix + '-' + path.relative(__dirname, this.resourcePath)
                                                 .replace(new RegExp('\\' + path.sep, 'g'), '/')
+                                                .match(/\/(([^\/]+)(\/[^\/]+){1}\.[^\.]+)/)[1]
                                                 .match(/(\.\.\/)*(.*)\.md/)[2]
                                                 .replace(/\//g, '-')
                                                 .replace(/ms-/g, '');
-
     var component = [
         importScript.join(''),
         'export const name = \'' + componentName + '\';' +
